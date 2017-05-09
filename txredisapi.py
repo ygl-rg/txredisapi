@@ -1772,6 +1772,69 @@ class BaseRedisProtocol(LineReceiver, policies.TimeoutMixin):
     def role(self):
         return self.execute_command("ROLE")
 
+    def geoadd(self, key, *args):
+        """
+        :param key:  
+        :param args: longitude, latitude, member/name,... 
+        :return: the number of elements added to the sorted set
+        """
+        return self.execute_command("GEOADD", key, *args)
+
+    def geodist(self, key, member1, member2, unit='m'):
+        """
+        :param key: sorted set key 
+        :param member1: 
+        :param member2: 
+        :param unit: unit
+        :return: 
+        """
+        if unit not in ('m', 'km', 'mi', 'ft'):
+            raise RedisError("unit must be m, km mi or ft")
+        return self.execute_command("GEODIST", key, member1, member2, unit)
+
+    def geohash(self, key, *members):
+        """
+        :param key: 
+        :param members: 
+        :return: 
+        """
+        return self.execute_command("GEOHASH", key, *members)
+
+    def geopos(self, key, *members):
+        """
+        :param key: 
+        :param members: 
+        :return: 
+        """
+        return self.execute_command("GEOPOS", key, *members)
+
+    def georadius(self, key, lon, lat, radius, unit, *args):
+        """
+        :param key: 
+        :param lon: 
+        :param lat: 
+        :param radius: 
+        :param unit: 
+        :param args: WITHCOORD, WITHDIST, WITHHASH, COUNT, ASC|DESC, STORE, STOREDIST 
+        :return: 
+        """
+        if unit not in ('m', 'km', 'mi', 'ft'):
+            raise RedisError("unit must be m, km mi or ft")
+        return self.execute_command("GEORADIUS", key, lon, lat, radius, unit, *args)
+
+    def georadiusbymember(self, key, member, radius, unit, *args):
+        """
+        :param key: 
+        :param member: 
+        :param radius: 
+        :param unit: 
+        :param args: WITHCOORD, WITHDIST, WITHHASH, COUNT, ASC|DESC, STORE, STOREDIST 
+        :return: 
+        """
+        if unit not in ('m', 'km', 'mi', 'ft'):
+            raise RedisError("unit must be m, km mi or ft")
+        return self.execute_command("GEORADIUSBYMEMBER", key, member, radius, unit, *args)
+
 
 class HiredisProtocol(BaseRedisProtocol):
     def __init__(self, *args, **kwargs):
