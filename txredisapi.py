@@ -792,8 +792,7 @@ class BaseRedisProtocol(LineReceiver, policies.TimeoutMixin):
 
     def mset(self, mapping):
         """
-        Set the respective fields to the respective values.
-        HMSET replaces old values with new values.
+        Set the respective keys to the respective values.
         """
         items = []
         for pair in six.iteritems(mapping):
@@ -1908,6 +1907,8 @@ class MonitorProtocol(RedisProtocol):
 
 
 class SubscriberProtocol(RedisProtocol):
+    _sub_unsub_reponses = set([u"subscribe", u"unsubscribe", u"psubscribe", u"punsubscribe"])
+
     def messageReceived(self, pattern, channel, message):
         pass
 
@@ -1917,6 +1918,8 @@ class SubscriberProtocol(RedisProtocol):
                 self.messageReceived(None, *reply[-2:])
             elif len(reply) > 3 and reply[-4] == u"pmessage":
                 self.messageReceived(*reply[-3:])
+            elif reply[-3] in self._sub_unsub_reponses and len(self.replyQueue.waiting) == 0:
+                pass
             else:
                 self.replyQueue.put(reply[-3:])
         else:
@@ -2609,6 +2612,9 @@ class SentinelRedisProtocol(RedisProtocol):
                 RedisProtocol.connectionMade(self)
                 self.factory.resetDelay()
 
+        if self.factory.password is not None:
+            self.auth(self.factory.password)
+
         return self.role().addCallback(check_role)
 
 
@@ -2796,4 +2802,4 @@ __all__ = [
 ]
 
 __author__ = "Alexandre Fiori"
-__version__ = version = "1.4.4"
+__version__ = version = "1.4.5"

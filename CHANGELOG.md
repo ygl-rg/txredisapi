@@ -1,10 +1,14 @@
 # Changelog
 
-## Release 1.4.5 (UNRELEASED)
+## Release 1.4.5 (2017-11-08)
 
 ### Features
 
 - Python 2.6 support
+
+### Bugfixes
+
+- Increasing memory consumption after many subscribe & unsubscribe commands
 
 ---
 
